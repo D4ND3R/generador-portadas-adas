@@ -955,17 +955,17 @@ button:disabled {
 
 @page {
   margin: 0;
-  size: A4 portrait;
+  size: letter portrait;
 }
 
 @page gpadas-portrait {
   margin: 0;
-  size: A4 portrait;
+  size: letter portrait;
 }
 
 @page gpadas-landscape {
   margin: 0;
-  size: A4 landscape;
+  size: letter landscape;
 }
 
 @media print {
@@ -984,8 +984,7 @@ button:disabled {
   }
 
   .app-shell,
-  .preview-zone,
-  .page-preview {
+  .preview-zone {
     background: #ffffff;
     display: block;
     height: auto !important;
@@ -995,25 +994,44 @@ button:disabled {
     width: auto !important;
   }
 
+  .page-preview {
+    background: #ffffff;
+    display: block;
+    height: 1056px !important;
+    min-height: 0;
+    overflow: hidden;
+    padding: 0;
+    page: gpadas-portrait;
+    position: relative;
+    width: 816px !important;
+  }
+
+  .page-preview.preview-horizontal {
+    height: 816px !important;
+    page: gpadas-landscape;
+    width: 1056px !important;
+  }
+
   .page-frame {
     box-shadow: none;
     break-after: avoid;
     break-before: avoid;
     break-inside: avoid;
     height: 1123px;
+    left: 50%;
     margin: 0;
-    page: gpadas-portrait;
     page-break-after: avoid;
     page-break-before: avoid;
     page-break-inside: avoid;
-    position: static;
-    transform: none !important;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%) scale(0.94034) !important;
+    transform-origin: center;
     width: 794px;
   }
 
   .page-frame.page-horizontal {
     height: 794px;
-    page: gpadas-landscape;
     width: 1123px;
   }
 

@@ -424,6 +424,10 @@ function App() {
     form.orientation === "horizontal"
       ? { width: 1123, height: 794, pdfOrientation: "landscape" as const }
       : { width: 794, height: 1123, pdfOrientation: "portrait" as const };
+  const pdfPageSize =
+    form.orientation === "horizontal"
+      ? { width: 792, height: 612, pdfOrientation: "landscape" as const }
+      : { width: 612, height: 792, pdfOrientation: "portrait" as const };
   const availablePreviewWidth =
     viewportWidth > 1120 ? viewportWidth - 420 - 72 : viewportWidth - 36;
   const previewScale = isExporting
@@ -525,11 +529,27 @@ function App() {
       });
       const image = canvas.toDataURL("image/png");
       const pdf = new jsPDF({
-        orientation: pageSize.pdfOrientation,
-        unit: "px",
-        format: [pageSize.width, pageSize.height],
+        orientation: pdfPageSize.pdfOrientation,
+        unit: "pt",
+        format: "letter",
       });
-      pdf.addImage(image, "PNG", 0, 0, pageSize.width, pageSize.height);
+      const coverRatio = pageSize.width / pageSize.height;
+      const pdfRatio = pdfPageSize.width / pdfPageSize.height;
+      const imageSize =
+        coverRatio > pdfRatio
+          ? {
+              width: pdfPageSize.width,
+              height: pdfPageSize.width / coverRatio,
+              x: 0,
+              y: (pdfPageSize.height - pdfPageSize.width / coverRatio) / 2,
+            }
+          : {
+              width: pdfPageSize.height * coverRatio,
+              height: pdfPageSize.height,
+              x: (pdfPageSize.width - pdfPageSize.height * coverRatio) / 2,
+              y: 0,
+            };
+      pdf.addImage(image, "PNG", imageSize.x, imageSize.y, imageSize.width, imageSize.height);
       const mainParticipant = form.participants.find((name) => name.trim()) ?? "alumnos";
       pdf.save(`${fileSafe(buildWorkTitle(form)) || "portada"}-${fileSafe(mainParticipant) || "alumnos"}.pdf`);
     } finally {
@@ -744,7 +764,7 @@ function App() {
 
       <section className="preview-zone" aria-label="Vista previa">
         <div
-          className="page-preview"
+          className={`page-preview preview-${form.orientation}`}
           style={{
             height: pageSize.height * previewScale,
             width: pageSize.width * previewScale,
